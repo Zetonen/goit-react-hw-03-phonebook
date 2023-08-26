@@ -13,11 +13,17 @@ export class App extends Component {
 
   componentDidMount() {
     const contacts = getContacts();
-    console.log(contacts);
     if (contacts) {
       this.setState({ contacts });
     }
   }
+  componentDidUpdate = (prevProps, prevState) => {
+    const { contacts } = this.state;
+    if (contacts !== prevState.contacts) {
+      addContacts(contacts);
+    }
+  };
+
   addContact = contact => {
     const isInContacts = this.state.contacts.find(
       ({ name }) => name.toLowerCase() === contact.name.toLowerCase()
@@ -26,13 +32,9 @@ export class App extends Component {
       alert(`${contact.name} is already in contacts`);
       return;
     }
-    this.setState(prevState => {
-      const contacts = [...prevState.contacts, { ...contact, id: nanoid() }];
-      addContacts(contacts);
-      return {
-        contacts,
-      };
-    });
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, { ...contact, id: nanoid() }],
+    }));
   };
 
   onChangeFilter = ({ target }) => {
